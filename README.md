@@ -22,14 +22,14 @@ ssh root@<IP_СЕРВЕРА>
 
 ```bash
 sudo apt update && sudo apt install -y git
-git clone https://github.com/ВАШ_ЛОГИН_GITHUB/ВАШ_РЕПОЗИТОРИЙ.git
+git clone https://github.com/Yar45/proj1.git
 cd ВАШ_РЕПОЗИТОРИЙ
 ```
 
 > **Для приватного репозитория:**
 > Если ваш репозиторий приватный, укажите токен доступа (Personal Access Token):
 > ```bash
-> git clone https://<ВАШ_GITHUB_ТОКЕН>@github.com/ВАШ_ЛОГИН_GITHUB/ВАШ_РЕПОЗИТОРИЙ.git
+> git clone https://<ВАШ_GITHUB_ТОКЕН>@github.com/Yar45/proj1.git
 > ```
 
 ---
@@ -42,10 +42,10 @@ cd ВАШ_РЕПОЗИТОРИЙ
 mkdir -p ~/x-ui-install && cd ~/x-ui-install
 
 # Скачать docker-install.sh
-curl -fsSL https://raw.githubusercontent.com/ВАШ_ЛОГИН_GITHUB/ВАШ_РЕПОЗИТОРИЙ/main/docker-install.sh -o docker-install.sh
+curl -fsSL https://raw.githubusercontent.com/Yar45/proj1/main/docker-install.sh -o docker-install.sh
 
 # Скачать 3x-ui-install.sh
-curl -fsSL https://raw.githubusercontent.com/ВАШ_ЛОГИН_GITHUB/ВАШ_РЕПОЗИТОРИЙ/main/3x-ui-install.sh -o 3x-ui-install.sh
+curl -fsSL https://raw.githubusercontent.com/Yar45/proj1/main/3x-ui-install.sh -o 3x-ui-install.sh
 ```
 
 ---
