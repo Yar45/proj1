@@ -31,10 +31,21 @@ else
 fi
 
 if [ -n "$DOMAIN" ]; then
-  while [ -z "$EMAIL" ]; do
-    read -rp "   Введите ваш e-mail для Let's Encrypt (обязательно): " EMAIL
+  while true; do
+    read -e -rp "   Введите ваш e-mail для Let's Encrypt (обязательно): " EMAIL
+    # Удаляем случайные пробелы
+    EMAIL=$(echo "$EMAIL" | tr -d '[:space:]')
+    
     if [ -z "$EMAIL" ]; then
-      echo "   [!] Для выпуска SSL-сертификата e-mail обязателен (для уведомлений о продлении)."
+      echo "   [!] Для выпуска SSL-сертификата e-mail обязателен."
+    elif [[ "$EMAIL" =~ [^a-zA-Z0-9@._+-] ]]; then
+      echo "   [!] Ошибка: e-mail содержит недопустимые символы (проверьте русскую раскладку): '$EMAIL'"
+      EMAIL=""
+    elif [[ ! "$EMAIL" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+      echo "   [!] Некорректный формат e-mail адреса. Попробуйте снова."
+      EMAIL=""
+    else
+      break
     fi
   done
 fi
@@ -139,7 +150,7 @@ for i in {1..20}; do
 done
 
 echo "Установка логина, пароля, порта и базового пути..."
-docker exec 3x-ui x-ui setting \
+docker exec 3x-ui /app/x-ui setting \
   -username "$PANEL_USER" \
   -password "$PANEL_PASS" \
   -port "$PANEL_PORT" \
