@@ -71,22 +71,27 @@ if [[ ! "$PANEL_WEB_BASE_PATH" =~ /$ ]]; then
   PANEL_WEB_BASE_PATH="$PANEL_WEB_BASE_PATH/"
 fi
 
+SUB_PORT="${SUB_PORT:-2087}"
+SUB_PATH="${SUB_PATH:-/sub/}"
+
 echo ""
 echo "Параметры для настройки:"
-echo "  - IP сервера:  $SERVER_IP"
-echo "  - Домен:       ${DOMAIN:-'Не указан (только по IP)'}"
+echo "  - IP сервера:     $SERVER_IP"
+echo "  - Домен:          ${DOMAIN:-'Не указан (только по IP)'}"
 if [ -n "$DOMAIN" ]; then
-  echo "  - E-mail:      $EMAIL"
+  echo "  - E-mail:         $EMAIL"
 fi
-echo "  - Порт панели: $PANEL_PORT"
-echo "  - Логин:       $PANEL_USER"
-echo "  - Пароль:      $PANEL_PASS"
-echo "  - URL-путь:    $PANEL_WEB_BASE_PATH"
+echo "  - Порт панели:    $PANEL_PORT"
+echo "  - Порт подписки:  $SUB_PORT"
+echo "  - Путь подписки:  $SUB_PATH"
+echo "  - Логин:          $PANEL_USER"
+echo "  - Пароль:         $PANEL_PASS"
+echo "  - URL-путь:       $PANEL_WEB_BASE_PATH"
 echo ""
 
 echo "=== 2. Настройка фаервола (UFW) ==="
 apt update
-apt install -y ufw
+apt install -y ufw sqlite3
 
 ufw default deny incoming
 ufw default allow outgoing
@@ -94,6 +99,7 @@ ufw default allow outgoing
 # Открытие необходимых портов
 ufw allow 22/tcp comment 'SSH'
 ufw allow "${PANEL_PORT}/tcp" comment '3x-ui Panel'
+ufw allow "${SUB_PORT}/tcp" comment '3x-ui Subscription'
 ufw allow 443/tcp comment 'HTTPS/VLESS'
 ufw allow 443/udp comment 'HTTPS/HTTP3'
 ufw allow 80/tcp comment 'HTTP/Certbot'
@@ -156,7 +162,30 @@ docker exec 3x-ui /app/x-ui setting \
   -port "$PANEL_PORT" \
   -webBasePath "$PANEL_WEB_BASE_PATH"
 
-echo "Перезапуск контейнера для применения настроек..."
+echo "Настройка SSL-сертификатов и сервера подписок (порт $SUB_PORT)..."
+CERT_FILE=""
+KEY_FILE=""
+SSL_ENABLED="false"
+
+if [ -n "$DOMAIN" ] && [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
+  CERT_FILE="/root/cert/live/$DOMAIN/fullchain.pem"
+  KEY_FILE="/root/cert/live/$DOMAIN/privkey.pem"
+  SSL_ENABLED="true"
+  echo "SSL-сертификаты обнаружены и привязаны к панели и подписке."
+fi
+
+sqlite3 /opt/3x-ui/db/x-ui.db <<SQL
+UPDATE settings SET value = '$CERT_FILE' WHERE key = 'webCertFile';
+UPDATE settings SET value = '$KEY_FILE' WHERE key = 'webKeyFile';
+UPDATE settings SET value = 'true' WHERE key = 'subEnable';
+UPDATE settings SET value = '$SUB_PORT' WHERE key = 'subPort';
+UPDATE settings SET value = '$SUB_PATH' WHERE key = 'subPath';
+UPDATE settings SET value = '${DOMAIN:-}' WHERE key = 'subDomain';
+UPDATE settings SET value = '$CERT_FILE' WHERE key = 'subCertFile';
+UPDATE settings SET value = '$KEY_FILE' WHERE key = 'subKeyFile';
+SQL
+
+echo "Перезапуск контейнера для применения всех настроек..."
 docker restart 3x-ui
 
 # Формирование пути для вывода
@@ -170,21 +199,27 @@ echo "=========================================================="
 echo "          3x-ui успешно настроен и запущен!               "
 echo "=========================================================="
 echo "Панель управления доступна по адресам:"
-if [ -n "$DOMAIN" ]; then
-  echo "  http://$DOMAIN:$PANEL_PORT/$URL_PATH"
-  echo "  (После включения SSL в настройках: https://$DOMAIN:$PANEL_PORT/$URL_PATH)"
+if [ "$SSL_ENABLED" == "true" ]; then
+  echo "  https://$DOMAIN:$PANEL_PORT/$URL_PATH  (Защищено SSL)"
+  echo "  http://$SERVER_IP:$PANEL_PORT/$URL_PATH"
+  echo ""
+  echo "Сервер подписок (Subscription):"
+  echo "  https://$DOMAIN:$SUB_PORT$SUB_PATH  (Защищено SSL)"
+else
+  if [ -n "$DOMAIN" ]; then
+    echo "  http://$DOMAIN:$PANEL_PORT/$URL_PATH"
+  fi
+  echo "  http://$SERVER_IP:$PANEL_PORT/$URL_PATH"
+  echo ""
+  echo "Сервер подписок (Subscription):"
+  echo "  http://${DOMAIN:-$SERVER_IP}:$SUB_PORT$SUB_PATH"
 fi
-echo "  http://$SERVER_IP:$PANEL_PORT/$URL_PATH"
 echo ""
 echo "Параметры авторизации:"
-echo "  Логин:       $PANEL_USER"
-echo "  Пароль:      $PANEL_PASS"
-echo "  Порт панели: $PANEL_PORT"
-echo "  URL-путь:    $PANEL_WEB_BASE_PATH"
-if [ -n "$DOMAIN" ]; then
-  echo ""
-  echo "Пути к SSL-сертификатам для настройки HTTPS в панели:"
-  echo "  Public Key:  /root/cert/live/$DOMAIN/fullchain.pem"
-  echo "  Private Key: /root/cert/live/$DOMAIN/privkey.pem"
-fi
+echo "  Логин:          $PANEL_USER"
+echo "  Пароль:         $PANEL_PASS"
+echo "  Порт панели:    $PANEL_PORT"
+echo "  URL-путь:       $PANEL_WEB_BASE_PATH"
+echo "  Порт подписки:  $SUB_PORT"
+echo "  Путь подписки:  $SUB_PATH"
 echo "=========================================================="
