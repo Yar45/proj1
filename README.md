@@ -4,6 +4,7 @@
 
 * `docker-install.sh` — автоматическая установка Docker Engine, CLI, Containerd и Docker Compose Plugin из официального репозитория Docker.
 * `3x-ui-install.sh` — настройка фаервола (UFW), получение SSL-сертификата Let's Encrypt, запуск 3x-ui через Docker Compose и первоначальная настройка учетных данных (логин, пароль, порт, URL-путь).
+* `hysteria-install.sh` — развертывание высокоскоростного протокола Hysteria 2 (UDP/QUIC) в Docker Compose с оптимизацией системных буферов и маскировкой.
 
 ---
 
@@ -23,7 +24,7 @@ ssh root@<IP_СЕРВЕРА>
 ```bash
 sudo apt update && sudo apt install -y git
 git clone https://github.com/Yar45/proj1.git
-cd ВАШ_РЕПОЗИТОРИЙ
+cd proj1
 ```
 
 > **Для приватного репозитория:**
@@ -46,6 +47,9 @@ curl -fsSL https://raw.githubusercontent.com/Yar45/proj1/main/docker-install.sh 
 
 # Скачать 3x-ui-install.sh
 curl -fsSL https://raw.githubusercontent.com/Yar45/proj1/main/3x-ui-install.sh -o 3x-ui-install.sh
+
+# Скачать hysteria-install.sh
+curl -fsSL https://raw.githubusercontent.com/Yar45/proj1/main/hysteria-install.sh -o hysteria-install.sh
 ```
 
 ---
@@ -57,7 +61,7 @@ curl -fsSL https://raw.githubusercontent.com/Yar45/proj1/main/3x-ui-install.sh -
 В папке со скачанными скриптами выполните:
 
 ```bash
-chmod +x docker-install.sh 3x-ui-install.sh
+chmod +x docker-install.sh 3x-ui-install.sh hysteria-install.sh
 ```
 
 ---
@@ -112,6 +116,22 @@ sudo ./3x-ui-install.sh 194.87.12.34
 # Передать IP и домен:
 sudo ./3x-ui-install.sh 194.87.12.34 example.com
 ```
+
+---
+
+### Шаг 4. Установка и запуск Hysteria 2
+
+Для развертывания скоростного протокола Hysteria 2 запустите:
+
+```bash
+sudo ./hysteria-install.sh
+```
+
+* Скрипт автоматически обнаружит SSL-сертификаты Let's Encrypt (выпущенные на предыдущем шаге).
+* Настроит порт (по умолчанию `443/udp`), безопасный пароль и маскировку (`https://news.ycombinator.com/`).
+* Оптимизирует системные сетевые буферы ядра Linux (`net.core.rmem_max` и `wmem_max`).
+* Откроет нужный UDP-порт в UFW.
+* Выдаст готовую ссылку формата `hy2://...` для мгновенного импорта в приложения (v2rayN, Nekobox, Happ, Shadowrocket, Streisand).
 
 ---
 
