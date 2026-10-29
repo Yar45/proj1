@@ -50,8 +50,8 @@ if [ -n "$DOMAIN" ]; then
   done
 fi
 
-read -rp "3. Введите порт для веб-панели [по умолчанию 2053]: " INPUT_PORT
-PANEL_PORT="${INPUT_PORT:-2053}"
+read -rp "3. Введите порт для веб-панели [по умолчанию 8443]: " INPUT_PORT
+PANEL_PORT="${INPUT_PORT:-8443}"
 
 read -rp "4. Введите логин администратора [по умолчанию admin]: " INPUT_USER
 PANEL_USER="${INPUT_USER:-admin}"

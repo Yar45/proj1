@@ -124,7 +124,11 @@ sudo ./3x-ui-install.sh 194.87.12.34 example.com
 Для развертывания скоростного протокола Hysteria 2 запустите:
 
 ```bash
+# Интерактивный запуск:
 sudo ./hysteria-install.sh
+
+# Или сразу передав домен аргументом:
+sudo ./hysteria-install.sh example.com
 ```
 
 * Скрипт автоматически обнаружит SSL-сертификаты Let's Encrypt (выпущенные на предыдущем шаге).

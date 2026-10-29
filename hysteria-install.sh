@@ -12,24 +12,14 @@ echo "          Установка и запуск Hysteria 2 в Docker         
 echo "=========================================================="
 
 # --- 1. Сбор параметров конфигурации ---
-SERVER_IP="${SERVER_IP:-${1:-}}"
-if [ -z "$SERVER_IP" ]; then
-  read -e -rp "1. Введите внешний IP-адрес сервера: " SERVER_IP
-  while [ -z "$SERVER_IP" ]; do
-    read -e -rp "   IP-адрес не может быть пустым. Введите IP сервера: " SERVER_IP
-  done
-else
-  echo "1. IP-адрес сервера: $SERVER_IP"
-fi
-
-DOMAIN="${DOMAIN:-${2:-}}"
+DOMAIN="${DOMAIN:-${1:-}}"
 if [ -z "$DOMAIN" ]; then
-  read -e -rp "2. Введите домен сервера: " DOMAIN
+  read -e -rp "1. Введите домен сервера: " DOMAIN
   while [ -z "$DOMAIN" ]; do
     read -e -rp "   Домен не может быть пустым. Введите домен: " DOMAIN
   done
 else
-  echo "2. Домен сервера: $DOMAIN"
+  echo "1. Домен сервера: $DOMAIN"
 fi
 
 # Проверка наличия .pem сертификатов Let's Encrypt
@@ -47,22 +37,21 @@ fi
 echo "   [OK] Найдены .pem сертификаты для $DOMAIN"
 
 # Порт подключения (UDP)
-read -e -rp "3. Введите порт для Hysteria 2 (UDP) [по умолчанию 443]: " INPUT_PORT
+read -e -rp "2. Введите порт для Hysteria 2 (UDP) [по умолчанию 443]: " INPUT_PORT
 HY2_PORT="${INPUT_PORT:-443}"
 
 # Пароль авторизации
 GEN_PASS=$(tr -dc 'A-Za-z0-9' < /dev/urandom 2>/dev/null | head -c 16 || echo "Hy2_$(date +%s)")
-read -e -rp "4. Введите пароль подключения [Enter для генерации: $GEN_PASS]: " INPUT_PASS
+read -e -rp "3. Введите пароль подключения [Enter для генерации: $GEN_PASS]: " INPUT_PASS
 HY2_PASSWORD="${INPUT_PASS:-$GEN_PASS}"
 
 # URL маскировки (Masquerade)
-DEFAULT_MASQ="https://max.ru"
-read -e -rp "5. Введите URL для маскировки [Enter для $DEFAULT_MASQ]: " INPUT_MASQ
+DEFAULT_MASQ="https://news.ycombinator.com/"
+read -e -rp "4. Введите URL для маскировки [Enter для $DEFAULT_MASQ]: " INPUT_MASQ
 MASQ_URL="${INPUT_MASQ:-$DEFAULT_MASQ}"
 
 echo ""
 echo "Параметры для развертывания:"
-echo "  - IP сервера:     $SERVER_IP"
 echo "  - Домен:          $DOMAIN"
 echo "  - Порт (UDP):     $HY2_PORT"
 echo "  - Пароль:         $HY2_PASSWORD"
@@ -202,7 +191,7 @@ echo "=========================================================="
 echo "          Hysteria 2 успешно развернута!                  "
 echo "=========================================================="
 echo "Параметры подключения:"
-echo "  Сервер (хост):  $DOMAIN (IP: $SERVER_IP)"
+echo "  Сервер (хост):  $DOMAIN"
 echo "  Порт (UDP):     $HY2_PORT"
 echo "  Пароль:         $HY2_PASSWORD"
 echo "  SNI:            $DOMAIN"
