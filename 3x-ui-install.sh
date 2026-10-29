@@ -91,7 +91,7 @@ echo ""
 
 echo "=== 2. Настройка фаервола (UFW) ==="
 apt update
-apt install -y ufw sqlite3
+apt install -y ufw
 
 ufw default deny incoming
 ufw default allow outgoing
@@ -162,30 +162,7 @@ docker exec 3x-ui /app/x-ui setting \
   -port "$PANEL_PORT" \
   -webBasePath "$PANEL_WEB_BASE_PATH"
 
-echo "Настройка SSL-сертификатов и сервера подписок (порт $SUB_PORT)..."
-CERT_FILE=""
-KEY_FILE=""
-SSL_ENABLED="false"
-
-if [ -n "$DOMAIN" ] && [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
-  CERT_FILE="/root/cert/live/$DOMAIN/fullchain.pem"
-  KEY_FILE="/root/cert/live/$DOMAIN/privkey.pem"
-  SSL_ENABLED="true"
-  echo "SSL-сертификаты обнаружены и привязаны к панели и подписке."
-fi
-
-sqlite3 /opt/3x-ui/db/x-ui.db <<SQL
-UPDATE settings SET value = '$CERT_FILE' WHERE key = 'webCertFile';
-UPDATE settings SET value = '$KEY_FILE' WHERE key = 'webKeyFile';
-UPDATE settings SET value = 'true' WHERE key = 'subEnable';
-UPDATE settings SET value = '$SUB_PORT' WHERE key = 'subPort';
-UPDATE settings SET value = '$SUB_PATH' WHERE key = 'subPath';
-UPDATE settings SET value = '${DOMAIN:-}' WHERE key = 'subDomain';
-UPDATE settings SET value = '$CERT_FILE' WHERE key = 'subCertFile';
-UPDATE settings SET value = '$KEY_FILE' WHERE key = 'subKeyFile';
-SQL
-
-echo "Перезапуск контейнера для применения всех настроек..."
+echo "Перезапуск контейнера для применения параметров..."
 docker restart 3x-ui
 
 # Формирование пути для вывода
@@ -198,21 +175,10 @@ echo ""
 echo "=========================================================="
 echo "          3x-ui успешно настроен и запущен!               "
 echo "=========================================================="
-echo "Панель управления доступна по адресам:"
-if [ "$SSL_ENABLED" == "true" ]; then
-  echo "  https://$DOMAIN:$PANEL_PORT/$URL_PATH  (Защищено SSL)"
-  echo "  http://$SERVER_IP:$PANEL_PORT/$URL_PATH"
-  echo ""
-  echo "Сервер подписок (Subscription):"
-  echo "  https://$DOMAIN:$SUB_PORT$SUB_PATH  (Защищено SSL)"
-else
-  if [ -n "$DOMAIN" ]; then
-    echo "  http://$DOMAIN:$PANEL_PORT/$URL_PATH"
-  fi
-  echo "  http://$SERVER_IP:$PANEL_PORT/$URL_PATH"
-  echo ""
-  echo "Сервер подписок (Subscription):"
-  echo "  http://${DOMAIN:-$SERVER_IP}:$SUB_PORT$SUB_PATH"
+echo "Панель управления сейчас доступна по адресу:"
+echo "  http://$SERVER_IP:$PANEL_PORT/$URL_PATH"
+if [ -n "$DOMAIN" ]; then
+  echo "  (или http://$DOMAIN:$PANEL_PORT/$URL_PATH)"
 fi
 echo ""
 echo "Параметры авторизации:"
@@ -220,6 +186,34 @@ echo "  Логин:          $PANEL_USER"
 echo "  Пароль:         $PANEL_PASS"
 echo "  Порт панели:    $PANEL_PORT"
 echo "  URL-путь:       $PANEL_WEB_BASE_PATH"
-echo "  Порт подписки:  $SUB_PORT"
-echo "  Путь подписки:  $SUB_PATH"
+
+if [ -n "$DOMAIN" ]; then
+  CERT_IN_CONTAINER="/root/cert/live/$DOMAIN/fullchain.pem"
+  KEY_IN_CONTAINER="/root/cert/live/$DOMAIN/privkey.pem"
+
+  echo ""
+  echo "----------------------------------------------------------"
+  echo " ВАЖНО: Настройте SSL и Подписки в веб-панели"
+  echo "----------------------------------------------------------"
+  echo "Войдите в панель, перейдите в «Настройки панели» (Panel Settings):"
+  echo ""
+  echo "1. Включение HTTPS в веб-панели:"
+  echo "   - Файл сертификата открытого ключа (Certificate):"
+  echo "     $CERT_IN_CONTAINER"
+  echo "   - Файл сертификата закрытого ключа (Private key):"
+  echo "     $KEY_IN_CONTAINER"
+  echo "   -> Нажмите «Сохранить конфигурацию», затем «Перезапустить панель»."
+  echo "   После этого панель будет доступна по защищенному адресу:"
+  echo "   https://$DOMAIN:$PANEL_PORT/$URL_PATH"
+  echo ""
+  echo "2. Настройка сервера подписок («Настройки подписки»):"
+  echo "   - Включить подписку:          Включить (чекбокс / ON)"
+  echo "   - Порт подписки:              $SUB_PORT"
+  echo "   - Путь подписки:              $SUB_PATH"
+  echo "   - Домен подписки:             $DOMAIN"
+  echo "   - Сертификат открытого ключа:  $CERT_IN_CONTAINER"
+  echo "   - Сертификат закрытого ключа:  $KEY_IN_CONTAINER"
+  echo "   -> Нажмите «Сохранить конфигурацию», затем «Перезапустить панель»."
+  echo "   Ссылка на подписку будет: https://$DOMAIN:$SUB_PORT$SUB_PATH"
+fi
 echo "=========================================================="
