@@ -87,17 +87,15 @@ else
 fi
 
 # 2. Увеличение системных буферов UDP/QUIC (рекомендация Hysteria 2)
-echo "Увеличение буферов до 8000000 (8 MB)..."
-sysctl -w net.core.rmem_max=8000000 >/dev/null 2>&1 || true
-sysctl -w net.core.wmem_max=8000000 >/dev/null 2>&1 || true
+echo "Увеличение буферов до 8388608 (8 MiB)..."
+sysctl -w net.core.rmem_max=8388608 >/dev/null 2>&1 || true
+sysctl -w net.core.wmem_max=8388608 >/dev/null 2>&1 || true
 
 # Сохранение параметров в sysctl.conf
-if ! grep -q "net.core.rmem_max=8000000" /etc/sysctl.conf 2>/dev/null; then
-  echo "net.core.rmem_max=8000000" >> /etc/sysctl.conf
-fi
-if ! grep -q "net.core.wmem_max=8000000" /etc/sysctl.conf 2>/dev/null; then
-  echo "net.core.wmem_max=8000000" >> /etc/sysctl.conf
-fi
+sed -i '/net\.core\.rmem_max/d' /etc/sysctl.conf 2>/dev/null || true
+sed -i '/net\.core\.wmem_max/d' /etc/sysctl.conf 2>/dev/null || true
+echo "net.core.rmem_max=8388608" >> /etc/sysctl.conf
+echo "net.core.wmem_max=8388608" >> /etc/sysctl.conf
 
 # Настройка UFW
 if command -v ufw >/dev/null 2>&1; then
