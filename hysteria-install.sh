@@ -172,7 +172,7 @@ cd "$INSTALL_DIR"
 docker compose up -d
 
 # Небольшая пауза для проверки запуска
-sleep 2
+sleep 5
 if docker ps | grep -q "hysteria"; then
   echo "[OK] Контейнер Hysteria 2 успешно запущен!"
 else
