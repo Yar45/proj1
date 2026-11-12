@@ -68,6 +68,26 @@ node2/
 
 ---
 
+## 🚀 Скачивание проекта на сервера через GitHub
+
+Все скрипты развертывания, шаблоны и файлы сайтов-заглушек находятся в репозитории [https://github.com/Yar45/proj1](https://github.com/Yar45/proj1).
+
+Для загрузки проекта на целевой сервер (как зарубежный, так и российский) выполните:
+
+```bash
+apt update && apt install -y git
+git clone https://github.com/Yar45/proj1.git
+cd proj1/node2
+chmod +x *.sh configs/*.sh
+```
+
+> **Полезно:** Если в будущем вы обновите файлы в репозитории, для обновления на сервере достаточно выполнить:
+> ```bash
+> cd ~/proj1/node2 && git pull
+> ```
+
+---
+
 ## Шаг 2. Развертывание зарубежного сервера (EU — `eu.example.com`)
 
 > **ВАЖНО:** Зарубежный сервер настраивается **первым**, так как его ключи понадобятся для настройки сервера в РФ.
@@ -76,13 +96,20 @@ node2/
    ```bash
    ssh root@<IPv4_ИЛИ_IPv6_EU_СЕРВЕРА>
    ```
-2. Установите Docker:
+2. Скачайте проект из GitHub и перейдите в каталог `node2`:
    ```bash
-   chmod +x docker-install.sh && sudo ./docker-install.sh
+   apt update && apt install -y git
+   git clone https://github.com/Yar45/proj1.git
+   cd proj1/node2
+   chmod +x *.sh configs/*.sh
    ```
-3. Запустите установку 3x-ui:
+3. Установите Docker:
    ```bash
-   chmod +x 3x-ui-install.sh && sudo ./3x-ui-install.sh
+   sudo ./docker-install.sh
+   ```
+4. Запустите установку 3x-ui:
+   ```bash
+   sudo ./3x-ui-install.sh
    ```
    * При запросе роли выберите: **`2` (Зарубежный выходной шлюз)**.
    * Домен: введите ваш субдомен (например, `eu.example.com`).
@@ -119,13 +146,20 @@ node2/
    ```bash
    ssh root@<IPv4_RU_СЕРВЕРА>
    ```
-2. Установите Docker:
+2. Скачайте проект из GitHub и перейдите в каталог `node2`:
    ```bash
-   chmod +x docker-install.sh && sudo ./docker-install.sh
+   apt update && apt install -y git
+   git clone https://github.com/Yar45/proj1.git
+   cd proj1/node2
+   chmod +x *.sh configs/*.sh
    ```
-3. Запустите установку 3x-ui:
+3. Установите Docker:
    ```bash
-   chmod +x 3x-ui-install.sh && sudo ./3x-ui-install.sh
+   sudo ./docker-install.sh
+   ```
+4. Запустите установку 3x-ui:
+   ```bash
+   sudo ./3x-ui-install.sh
    ```
    * При запросе роли выберите: **`1` (Российский входной узел)**.
    * Домен: введите ваш субдомен (например, `ru.example.com`).
