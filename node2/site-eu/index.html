@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina UI — Modern Design System & Component Library</title>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --card-bg: #141b2a;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span { color: var(--accent); }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: var(--text-main); }
+        .hero {
+            max-width: 900px;
+            margin: 5rem auto 3.5rem auto;
+            text-align: center;
+            padding: 0 1.5rem;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 40%, #c7d2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2.5rem auto;
+        }
+        .cta-btn {
+            display: inline-block;
+            background-color: var(--accent);
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .cta-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 4rem auto 6rem auto;
+            padding: 0 1.5rem;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: left;
+            transition: border-color 0.2s;
+        }
+        .card:hover {
+            border-color: var(--accent);
+        }
+        .card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+        footer p { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Lumina<span>UI</span></div>
+        <nav>
+            <a href="#components">Components</a>
+            <a href="#features">Features</a>
+            <a href="#docs">Documentation</a>
+            <a href="#github">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="badge"><div class="dot"></div> Version 3.4 Released</div>
+            <h1>Build accessible modern web interfaces with speed</h1>
+            <p class="subtitle">An open-source design system and modular component suite built for developers crafting responsive digital experiences.</p>
+            <a href="#docs" class="cta-btn">Explore Documentation</a>
+        </section>
+
+        <section id="features" class="grid">
+            <div class="card">
+                <div class="icon">🎨</div>
+                <h3>Design Tokens</h3>
+                <p>Fully customizable typography, spacing, and color palettes optimized for dark and light modes out of the box.</p>
+            </div>
+            <div class="card">
+                <div class="icon">⚡</div>
+                <h3>Lightweight Core</h3>
+                <p>Zero external runtime dependencies. Tree-shakable ES modules ensuring minimal bundle sizes and instant load times.</p>
+            </div>
+            <div class="card">
+                <div class="icon">♿</div>
+                <h3>Accessible by Default</h3>
+                <p>Engineered in compliance with WAI-ARIA guidelines, offering full keyboard navigation and screen reader support.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

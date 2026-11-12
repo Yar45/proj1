@@ -1,0 +1,19 @@
+services:
+  3x-ui:
+    image: ghcr.io/mhsanaei/3x-ui:latest
+    container_name: 3x-ui
+    restart: always
+    network_mode: host
+    volumes:
+      - ./db/:/etc/x-ui/
+      - /etc/letsencrypt/:/root/cert/:ro
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    network_mode: host
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./html/:/var/www/html/
+      - /etc/letsencrypt/:/etc/letsencrypt/:ro
